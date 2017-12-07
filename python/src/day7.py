@@ -39,19 +39,22 @@ def balance(tower):
     if imbalanced == False:
       break
 
+  childtowers = [getsubtower(prev, findbyname(prev, name)) for name in prev.max_stack().children]
+
   if childtowers[0] == tower:
     s = childtowers[1]
   else:
     s = childtowers[0]
   
-  diff = tower.weight - (s.weight * len(childtowers))
+  
+  diff = tower.weight - s.weight
   print(balanced(tower))
   for x in [getsubtower(tower, findbyname(tower, name)) for name in base.children]:
     print(x.weight)
   print(tower.weight)
   print(s.weight)
   print(tower.max_stack().weight)
-  return tower.max_stack().weight - 6
+  return tower.max_stack().weight - diff
 
 
 class TowerElement():
