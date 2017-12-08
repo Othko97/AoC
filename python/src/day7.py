@@ -25,36 +25,49 @@ def balanced(tower):
 
 def balance(tower):
   prev = tower
+  # while tower has children with different weights
   while not balanced(tower):
     base = tower.max_stack()
-    childtowers = [getsubtower(tower, findbyname(tower, name)) for name in base.children]
-    for t in childtowers:
+    childtowers = [getsubtower(tower, findbyname(tower, name))
+                   for name in base.children]
+    for child in childtowers:
       imbalanced = False
-      if not balanced(t):
+      # if child has children with different weights
+      if not balanced(child):
         imbalanced = True
         prev = tower
-        tower = t
+        tower = child
         break
-
+ 
+    # this tower is unbalanced and none of its children are, one of the
+    # children must be causing the problem
     if imbalanced == False:
       break
-
-  childtowers = [getsubtower(prev, findbyname(prev, name)) for name in prev.max_stack().children]
-
-  if childtowers[0] == tower:
-    s = childtowers[1]
-  else:
-    s = childtowers[0]
-  
-  
-  diff = tower.weight - s.weight
-  print(balanced(tower))
-  for x in [getsubtower(tower, findbyname(tower, name)) for name in base.children]:
-    print(x.weight)
-  print(tower.weight)
-  print(s.weight)
-  print(tower.max_stack().weight)
-  return tower.max_stack().weight - diff
+ 
+  # Here tower is the tower with bad as a child.
+  # we need to identify which child is bad; it is the only one whose weight
+  # only occurs once.
+  childtowers = [getsubtower(tower, findbyname(tower, name))
+                 for name in tower.max_stack().children]
+  child_weights = [child.weight for child in childtowers]
+ 
+  # enumerate the weights, and find the correct one (appears > 1 times)
+  # and the bad one (appears only once)
+  for idx, weight in enumerate(child_weights):
+    occurrences = [w for w in child_weights if w == weight]
+    # these checks only make sense if there is more than one element
+    if len(childtowers) > 1 and len(occurrences) > 1:
+      target = weight
+    elif len(childtowers) > 1 and len(occurrences) == 1:
+      bad = childtowers[idx]
+ 
+  # diff is target (a good sibling's total weight) - the bad tower's
+  # total weight
+  diff = target - bad.weight
+ 
+  # return bad tower's base element's weight plus the difference (with the
+  # test data, this is 68 + -8)
+  return bad.max_stack().weight + diff
 
 
 class TowerElement():
@@ -93,6 +106,3 @@ for element in lines:
 tower = Tower(elements)
 print(tower.max_stack().name)
 print(balance(tower))
-
-#for e in tower.sort():
-#  print(balanced(getsubtower(tower, e)))
