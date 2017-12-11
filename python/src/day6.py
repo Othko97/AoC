@@ -23,7 +23,7 @@ def findloop(l):
   x = prevstates.index(temp)
   return [n, len(prevstates) - x]
 
-with open('./data/day6.txt', 'r') as data:
+with open('../data/day6.txt', 'r') as data:
   banks = list(map(int, data.readline().split()))
 
 print(findloop(banks))
